@@ -191,6 +191,39 @@ equivalent is the `http2` parameter on the `listen` directive.
 The DNS A record for `hospkpi.ambujaneotia.com` must already point at this host,
 or certbot cannot validate.
 
+### Certificate renewal
+
+Let's Encrypt certificates last 90 days. Installing certbot also installs a
+timer that renews anything with under 30 days left, so this is automatic — but
+confirm it is actually armed on this host:
+
+```bash
+systemctl list-timers certbot.timer --all     # should show a next run
+sudo certbot renew --dry-run                  # full rehearsal, changes nothing
+sudo certbot certificates                     # expiry dates
+```
+
+If `certbot.timer` is missing, certbot was installed in a way that uses cron
+instead — check `/etc/cron.d/certbot`. If neither exists, nothing is renewing
+and the site will start failing in 90 days.
+
+Renewal needs port 80 to stay reachable from the internet. Certbot writes its
+own ACME challenge handling into the config, so leave the port 80 server block
+in place even after the redirect to HTTPS is added.
+
+> **Do not re-copy `hotel_dashboard.nginx.conf` after certbot has run.**
+>
+> Certbot *edits the installed file in place*, adding the TLS server block and
+> the redirect. The copy in this repository is still the HTTP-only original, so
+> `sudo cp`-ing it again overwrites certbot's work and takes the site off HTTPS
+> until certbot is run a second time.
+>
+> The nginx config only needs copying once. Routine updates change the
+> application, not the proxy — pull, rebuild the frontend, restart the service.
+> If you ever do need to replace the nginx config, run
+> `sudo certbot --nginx -d hospkpi.ambujaneotia.com` again afterwards to put the
+> TLS block back.
+
 ## 7. First sign-in
 
 Open https://hospkpi.ambujaneotia.com and sign in with `FIRST_ADMIN_EMAIL` /
@@ -212,13 +245,22 @@ cd frontend && npm ci && npm run build
 sudo systemctl restart hotel_dashboard
 ```
 
+This touches the application only. Re-copy `hotel_dashboard.service` **only
+when that file changed** in the pull, and follow it with
+`sudo systemctl daemon-reload`. Leave the nginx config alone — see the warning
+under *Certificate renewal*.
+
 ## Where these files live
 
 `hotel_dashboard.service` and `hotel_dashboard.nginx.conf` stay **in the
 repository** as the source of truth, and are *copied* into `/etc/systemd/system/`
-and `/etc/nginx/sites-available/` on deploy. Edit them here, commit, pull on the
-server, copy again. Editing only the copies under `/etc` means the change is lost
-at the next fresh deploy.
+and `/etc/nginx/sites-available/` on deploy. Editing only the copies under `/etc`
+means the change is lost at the next fresh deploy.
+
+The one exception is the nginx config once certbot has run: certbot edits the
+installed copy to add TLS, so that file is no longer identical to the one here
+and must not be overwritten. Treat the repository copy as the bootstrap
+version.
 
 ## Troubleshooting
 
@@ -230,3 +272,5 @@ at the next fresh deploy.
 | Blank page, API works | `frontend/dist` missing — run `npm run build` |
 | 413 on upload | `client_max_body_size` too low in the nginx config |
 | Signed out unexpectedly | `SECRET_KEY` changed, which invalidates every issued token |
+| Site drops to HTTP, or cert errors after a deploy | The nginx config was re-copied over certbot's edits — re-run `sudo certbot --nginx -d hospkpi.ambujaneotia.com` |
+| Certificate expired | `certbot.timer` not enabled; check `systemctl list-timers certbot.timer` and `sudo certbot renew --dry-run` |
