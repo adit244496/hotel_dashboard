@@ -3,23 +3,25 @@
 #   sudo cp hotel_dashboard.service /etc/systemd/system/
 #   sudo systemctl daemon-reload
 #   sudo systemctl enable --now hotel_dashboard
+#   sudo systemctl status hotel_dashboard
+#   journalctl -u hotel_dashboard -f          # logs
 #
-# Adjust User and the paths below to match the deployment.
+# Paths assume the checkout at ~srvadmin/hotel_dashboard/hotel_dashboard.
+# This is a FastAPI (ASGI) app, so it runs under uvicorn — not gunicorn's
+# default WSGI worker, which cannot serve it.
 
 [Unit]
 Description=Hotel Performance Dashboard (FastAPI)
-After=network.target
-# The app needs PostgreSQL; if it runs in Docker on the same host, use:
-# After=network.target docker.service
-# Requires=docker.service
+After=network.target postgresql.service
+Wants=postgresql.service
 
 [Service]
 Type=simple
 User=srvadmin
 Group=srvadmin
-WorkingDirectory=/opt/hotel_dashboard/backend
-EnvironmentFile=/opt/hotel_dashboard/backend/.env
-ExecStart=/opt/hotel_dashboard/backend/venv/bin/python -m uvicorn app.main:app \
+WorkingDirectory=/home/srvadmin/hotel_dashboard/hotel_dashboard/backend
+EnvironmentFile=/home/srvadmin/hotel_dashboard/hotel_dashboard/backend/.env
+ExecStart=/home/srvadmin/hotel_dashboard/hotel_dashboard/backend/venv/bin/python -m uvicorn app.main:app \
     --host 0.0.0.0 \
     --port 8016 \
     --workers 2 \
@@ -28,7 +30,8 @@ ExecStart=/opt/hotel_dashboard/backend/venv/bin/python -m uvicorn app.main:app \
 Restart=on-failure
 RestartSec=5
 
-# The database may still be starting up after a reboot; keep retrying.
+# PostgreSQL may still be replaying its WAL just after a reboot, so allow a
+# generous number of restarts before systemd gives up.
 StartLimitIntervalSec=300
 StartLimitBurst=10
 

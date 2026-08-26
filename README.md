@@ -19,6 +19,9 @@ the same five tabs plus a Trends view over the accumulated history.
 The app is published at **https://hospkpi.ambujaneotia.com** and listens on
 **port 8016**.
 
+For the Ubuntu server deployment (native PostgreSQL, systemd, nginx, TLS),
+see **[DEPLOY.md](DEPLOY.md)**.
+
 ### Production / single port
 
 The API process also serves the built frontend, so the whole app runs on one
