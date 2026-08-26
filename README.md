@@ -188,9 +188,14 @@ disabled. You cannot disable your own account.
 
 ## Theming
 
-The header carries an **Auto / Light / Dark** switch. Auto follows the operating
-system and reacts to it changing; an explicit choice is remembered in
-`localStorage` and wins over the OS in both directions.
+The account menu carries an **Auto / Light / Dark** switch. **Dark is the
+default** for a first-time visitor, regardless of their operating system. Auto
+follows the OS and reacts to it changing; an explicit choice is remembered in
+`localStorage` and wins in both directions.
+
+A small script in `index.html` applies the stored theme to `<html>` before
+first paint, so the page never flashes the wrong theme while React mounts. Its
+storage key and default must stay in step with `src/theme/ThemeContext.jsx`.
 
 Every colour is a CSS custom property defined in `frontend/src/styles.css`:
 light is the base declaration, and dark is a *selected* set of steps for the dark

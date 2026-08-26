@@ -1,6 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 const STORAGE_KEY = 'hotel_dashboard_theme'
+// Dark unless the viewer has chosen otherwise. index.html stamps the same
+// value on <html> before first paint, so the page never flashes light first.
+const DEFAULT_MODE = 'dark'
 const ThemeContext = createContext(null)
 
 export const THEME_MODES = [
@@ -38,7 +41,7 @@ function readTokens() {
 
 export function ThemeProvider({ children }) {
   const [mode, setModeState] = useState(
-    () => localStorage.getItem(STORAGE_KEY) || 'auto'
+    () => localStorage.getItem(STORAGE_KEY) || DEFAULT_MODE
   )
   const [resolved, setResolved] = useState('dark')
   const [tokens, setTokens] = useState(null)
