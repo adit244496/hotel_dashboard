@@ -188,9 +188,8 @@ export default function FnbPanel({ hotels, currency }) {
             {outlets.length === 0 && (
               <tr>
                 <td colSpan={6} className="muted" style={{ textAlign: 'center', padding: '20px' }}>
-                  No outlet detail in the uploaded books for this period. Most MIS
-                  books publish the outlet statement for the month only — switch the
-                  Period filter to Monthly to see it.
+                  No outlet detail for this period. Most MIS books publish the
+                  outlet statement monthly only — switch Period to Monthly.
                 </td>
               </tr>
             )}

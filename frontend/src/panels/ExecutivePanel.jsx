@@ -92,7 +92,14 @@ export default function ExecutivePanel({ hotels, currency }) {
           />
         </ChartCard>
         <ChartCard title="Revenue mix" subtitle="Share of total actual revenue">
-          <Doughnut data={mixData} options={doughnutOptions(tokens, { format: fmt })} />
+          <Doughnut
+            data={mixData}
+            options={doughnutOptions(tokens, {
+              format: fmt,
+              labelFormat: (v) =>
+                mixTotal > 0 ? `${((v / mixTotal) * 100).toFixed(1)}%` : '',
+            })}
+          />
         </ChartCard>
       </div>
 

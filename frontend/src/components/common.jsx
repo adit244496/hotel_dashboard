@@ -143,6 +143,23 @@ export function MultiSelect({ label, options, selected, onChange }) {
   )
 }
 
+/**
+ * Inline explainer.
+ *
+ * Keeps the visible copy to one line and parks the detail behind an icon, so a
+ * paragraph of background does not push the actual content down the page.
+ */
+export function Hint({ children, label = 'More information' }) {
+  return (
+    <span className="hint" tabIndex={0} role="note" aria-label={label}>
+      <span className="hint-icon" aria-hidden="true">
+        i
+      </span>
+      <span className="hint-body">{children}</span>
+    </span>
+  )
+}
+
 export function Alert({ kind = 'info', title, children }) {
   return (
     <div className={`alert ${kind}`}>

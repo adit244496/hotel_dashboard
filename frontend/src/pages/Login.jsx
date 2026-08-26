@@ -12,11 +12,11 @@ const HIGHLIGHTS = [
   },
   {
     title: 'Actual vs budget vs last year',
-    body: 'Each figure sits beside its budget and prior-year comparison, with the variance worked out.',
+    body: 'Every figure sits beside its budget and prior year, with the variance worked out.',
   },
   {
     title: 'Two years of history',
-    body: 'Monthly MIS workbooks are read, checked and kept, so trends build up as you upload.',
+    body: 'Workbooks are read, checked and kept, so trends build as you upload.',
   },
 ]
 

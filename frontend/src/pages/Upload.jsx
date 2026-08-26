@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../api/client'
-import { Alert } from '../components/common'
+import { Alert, Hint } from '../components/common'
 import CoverageMatrix from '../components/CoverageMatrix'
 import { MONTHS, money, monthYearLabel, monthYearLong, num, percent, rupees } from '../lib/format'
 
@@ -189,9 +189,13 @@ export default function Upload({ currency }) {
       <div className="panel-card" ref={formRef}>
         <h2>Upload monthly MIS</h2>
         <p className="sub">
-          Pick the hotel and the month the workbook reports on, then choose the file.
-          Nothing is saved until you review the figures below and confirm — so a
-          mis-selected month or hotel can be caught before it reaches the dashboard.
+          Pick the hotel and month, then choose the file.
+          <Hint>
+            The month is the period the workbook <i>reports on</i>, not when you
+            upload it. Nothing is saved until you review the parsed figures and
+            confirm, so a mis-selected hotel or month is caught before it reaches
+            the dashboard.
+          </Hint>
         </p>
 
         {error && <div className="alert error">{error}</div>}

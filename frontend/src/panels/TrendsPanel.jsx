@@ -116,10 +116,8 @@ export default function TrendsPanel({ hotelCodes, currency, period }) {
             ))}
           </select>
         </div>
-        <div style={{ fontSize: 'var(--fs-md)', color: 'var(--ink-3)', paddingBottom: 8 }}>
-          {isAdditive
-            ? 'Summed across the selected hotels.'
-            : 'Averaged across the selected hotels — a rate, so it is not summed.'}
+        <div className="basis-note">
+          {isAdditive ? 'Summed' : 'Averaged'} across the selected hotels
         </div>
       </div>
 

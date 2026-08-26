@@ -70,6 +70,18 @@ const valueLabels = {
         if (!text || text === '-') return
         if (mode === 'bar' && ctx.measureText(text).width > slot) return
 
+        if (mode === 'arc') {
+          // Only label a slice wide enough to hold the text inside the ring.
+          const sweep = Math.abs(element.endAngle - element.startAngle)
+          if (sweep < 0.42) return
+          const { x, y } = element.getCenterPoint()
+          ctx.fillStyle = '#fff'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(text, x, y)
+          return
+        }
+
         if (mode === 'stack') {
           // Only label a segment tall enough to hold the text with padding.
           const height = Math.abs(element.y - element.base)
@@ -312,7 +324,7 @@ export function lineOptions(tokens, { format, labelFormat } = {}) {
   }
 }
 
-export function doughnutOptions(tokens, { format } = {}) {
+export function doughnutOptions(tokens, { format, labelFormat } = {}) {
   const t = tokensOr(tokens)
   const base = legend(t, true)
   return {
@@ -327,8 +339,9 @@ export function doughnutOptions(tokens, { format } = {}) {
         labels: { ...base.labels, padding: 12 },
       },
       tooltip: tooltip(t, format),
-      // The legend already carries each slice's share.
-      valueLabels: { display: false },
+      valueLabels: labelFormat
+        ? { mode: 'arc', formatter: labelFormat }
+        : { display: false },
     },
   }
 }

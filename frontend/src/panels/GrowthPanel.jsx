@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
-import { Alert, ChartCard, EmptyState, Kpi, TableCard } from '../components/common'
+import { Alert, ChartCard, EmptyState, Hint, Kpi, TableCard } from '../components/common'
 import { BAR_MARK, barOptions, tokensOr } from '../components/charts'
 import { useTheme } from '../theme/ThemeContext'
 import { api } from '../api/client'
 import {
-  MONTH_SHORT,
   money,
   monthYearLabel,
   percent,
@@ -165,7 +164,22 @@ export default function GrowthPanel({ hotelCodes, currency, fiscalYear, month })
           </select>
         </div>
         <div className="filter">
-          <label>Comparison</label>
+          <label>
+            Comparison
+            <Hint>
+              Fiscal quarters run Apr–Jun (Q1), Jul–Sep (Q2), Oct–Dec (Q3) and
+              Jan–Mar (Q4).
+              <br />
+              <br />
+              Year on year works from a single upload, because each workbook
+              carries its own prior-year column. Month and quarter comparisons
+              need the neighbouring periods uploaded.
+              <br />
+              <br />
+              Rates such as occupancy and ARR are averaged across months; money
+              is summed.
+            </Hint>
+          </label>
           <div className="segmented" role="group" aria-label="Comparison basis">
             {BASES.map((b) => (
               <button
@@ -181,7 +195,7 @@ export default function GrowthPanel({ hotelCodes, currency, fiscalYear, month })
           </div>
         </div>
         <div className="basis-note">
-          {active.full}: <b>{currentFor(basis)}</b> against <b>{baseLabel(basis)}</b>
+          <b>{currentFor(basis)}</b> vs <b>{baseLabel(basis)}</b>
         </div>
       </div>
 
@@ -189,14 +203,13 @@ export default function GrowthPanel({ hotelCodes, currency, fiscalYear, month })
         <Alert kind="warn" title={`${active.full} is not available yet.`}>
           {basis === 'yoy'
             ? 'The uploaded workbooks carry no prior-year figures for this metric.'
-            : `Nothing is loaded for ${baseLabel(basis)}. Upload that period on the Upload page and this comparison will fill in — year on year works from a single upload, because each workbook carries its own prior-year column.`}
+            : `Nothing is loaded for ${baseLabel(basis)}. Upload it and this fills in.`}
         </Alert>
       )}
 
       {partialQuarter && (
-        <Alert kind="warn" title="Quarters cover a different number of months.">
-          One quarter has more months loaded than the other, so the comparison is
-          not like for like. The table shows the month count for each.
+        <Alert kind="warn" title="Quarters cover different month counts.">
+          Not like for like — the table shows each quarter&apos;s month count.
         </Alert>
       )}
 
@@ -341,12 +354,6 @@ export default function GrowthPanel({ hotelCodes, currency, fiscalYear, month })
         </table>
       </TableCard>
 
-      <p className="panel-note">
-        Fiscal quarters run Apr–Jun (Q1), Jul–Sep (Q2), Oct–Dec (Q3) and Jan–Mar
-        (Q4). {MONTH_SHORT[periods.current.month]} falls in Q
-        {periods.qoq.current.quarter}. Rates such as occupancy and ARR are
-        averaged across months rather than summed.
-      </p>
     </section>
   )
 }

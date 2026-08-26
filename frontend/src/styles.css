@@ -248,13 +248,32 @@ button, select, input { font-family: inherit; }
 
 /* ----------------------------------------------------------------- filters */
 .filters {
-  background: var(--surface); padding: var(--sp-3) var(--sp-4);
-  border-bottom: 1px solid var(--border);
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 60px; z-index: 90;
+}
+.filters-bar {
+  max-width: var(--maxw); margin: 0 auto; padding: 5px var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-3); min-height: 30px;
+}
+.filters-toggle {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px;
+  background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm);
+  color: var(--ink-2); font-size: var(--fs-sm); font-weight: 620; cursor: pointer;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.filters-toggle:hover { background: var(--surface-2); color: var(--ink); }
+.filters-toggle .caret { color: var(--ink-3); font-size: 10px; }
+/* The active slice stays readable while the controls are hidden. */
+.filters-summary {
+  font-size: var(--fs-sm); color: var(--ink-2); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
 }
 .filters-inner {
   max-width: var(--maxw); margin: 0 auto; display: flex; gap: var(--sp-4);
   flex-wrap: wrap; align-items: flex-end;
+  padding: 0 var(--sp-4) var(--sp-3);
 }
+.filters.collapsed .filters-inner { display: none; }
 .filter { display: flex; flex-direction: column; gap: 5px; }
 .filter label {
   font-size: 10px; font-weight: 700; color: var(--ink-3);
@@ -293,14 +312,14 @@ button, select, input { font-family: inherit; }
 }
 
 /* -------------------------------------------------------------------- main */
-.main { max-width: var(--maxw); margin: 0 auto; padding: var(--sp-5) var(--sp-4); }
+.main { max-width: var(--maxw); margin: 0 auto; padding: var(--sp-4); }
 
 .tabs {
   display: flex; gap: var(--sp-1); border-bottom: 1px solid var(--border);
-  margin-bottom: var(--sp-5); flex-wrap: wrap;
+  margin-bottom: var(--sp-4); flex-wrap: wrap;
 }
 .tab {
-  padding: 9px 14px; background: transparent; border: none; color: var(--ink-2);
+  padding: 7px 13px; background: transparent; border: none; color: var(--ink-2);
   font-size: var(--fs-md); font-weight: 600; cursor: pointer;
   border-bottom: 2px solid transparent; margin-bottom: -1px;
 }
@@ -309,25 +328,25 @@ button, select, input { font-family: inherit; }
 
 /* -------------------------------------------------------------- stat tiles */
 .kpis {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-  gap: var(--sp-3); margin-bottom: var(--sp-5);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--sp-2); margin-bottom: var(--sp-4);
 }
 .kpi {
   background: var(--surface); border-radius: var(--radius);
-  padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); box-shadow: var(--shadow);
+  padding: 10px var(--sp-3); border: 1px solid var(--border); box-shadow: var(--shadow);
 }
 .kpi-title {
   font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase;
-  letter-spacing: .05em; margin-bottom: 6px;
+  letter-spacing: .05em; margin-bottom: 3px;
 }
 /* Proportional figures: tabular-nums makes standalone numbers look loose. */
 .kpi-value {
-  font-size: var(--fs-2xl); font-weight: 650; letter-spacing: -.02em;
-  line-height: 1.1; margin-bottom: 7px;
+  font-size: 22px; font-weight: 650; letter-spacing: -.02em;
+  line-height: 1.15; margin-bottom: 4px;
 }
 .kpi-row {
-  display: flex; gap: var(--sp-3); font-size: var(--fs-xs); color: var(--ink-2);
-  flex-wrap: wrap; align-items: center;
+  display: flex; gap: var(--sp-2); font-size: var(--fs-xs); color: var(--ink-2);
+  flex-wrap: wrap; align-items: center; row-gap: 3px;
 }
 .kpi-row .lbl { color: var(--ink-3); margin-right: 3px; }
 
@@ -344,25 +363,25 @@ button, select, input { font-family: inherit; }
 /* ------------------------------------------------------------------ charts */
 .charts {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: var(--sp-4); margin-bottom: var(--sp-5);
+  gap: var(--sp-3); margin-bottom: var(--sp-4);
 }
 .chart-card {
-  background: var(--surface); border-radius: var(--radius); padding: var(--sp-4);
+  background: var(--surface); border-radius: var(--radius); padding: var(--sp-3);
   border: 1px solid var(--border); box-shadow: var(--shadow);
 }
-.chart-title { font-size: var(--fs-md); font-weight: 650; margin-bottom: 2px; }
-.chart-sub { font-size: var(--fs-xs); color: var(--ink-3); margin-bottom: var(--sp-3); }
+.chart-title { font-size: var(--fs-md); font-weight: 650; margin-bottom: 1px; }
+.chart-sub { font-size: var(--fs-xs); color: var(--ink-3); margin-bottom: var(--sp-2); }
 /* Height includes the axis band so labels are never cropped. */
-.chart-box { height: 236px; position: relative; }
-.chart-box.tall { height: 320px; }
+.chart-box { height: 208px; position: relative; }
+.chart-box.tall { height: 300px; }
 
 /* ------------------------------------------------------------------ tables */
 .tbl-card {
   background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
-  overflow: hidden; margin-bottom: var(--sp-4); box-shadow: var(--shadow);
+  overflow: hidden; margin-bottom: var(--sp-3); box-shadow: var(--shadow);
 }
 .tbl-hdr {
-  padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--border);
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border);
   display: flex; justify-content: space-between; align-items: center;
   gap: var(--sp-3); flex-wrap: wrap;
 }
@@ -372,14 +391,14 @@ button, select, input { font-family: inherit; }
 
 table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
 th {
-  background: var(--surface-2); padding: 9px 10px; text-align: left; font-weight: 650;
+  background: var(--surface-2); padding: 7px 10px; text-align: left; font-weight: 650;
   color: var(--ink-2); font-size: 10px; text-transform: uppercase;
   letter-spacing: .04em; white-space: nowrap; border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 2;
 }
-thead tr:nth-child(2) th { top: 31px; }
+thead tr:nth-child(2) th { top: 27px; }
 td {
-  padding: 9px 10px; border-bottom: 1px solid var(--border-soft); white-space: nowrap;
+  padding: 7px 10px; border-bottom: 1px solid var(--border-soft); white-space: nowrap;
   color: var(--ink-2);
 }
 tbody tr:last-child td { border-bottom: none; }
@@ -744,3 +763,26 @@ tr.editing td { background: var(--accent-soft); vertical-align: middle; }
   font-size: var(--fs-sm); color: var(--ink-3); line-height: 1.6;
   margin-top: var(--sp-3); max-width: 90ch;
 }
+
+/* --------------------------------------------------------------- hint icon */
+.hint { position: relative; display: inline-flex; vertical-align: middle; cursor: help; }
+.hint-icon {
+  width: 15px; height: 15px; border-radius: 50%; display: inline-flex;
+  align-items: center; justify-content: center; font-size: 10px; font-weight: 700;
+  font-style: italic; background: var(--surface-3); color: var(--ink-3);
+  border: 1px solid var(--border); margin-left: 5px;
+}
+.hint:hover .hint-icon, .hint:focus-visible .hint-icon {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.hint-body {
+  display: none; position: absolute; top: calc(100% + 7px); left: 0; z-index: 350;
+  width: 330px; padding: 10px 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); font-size: var(--fs-sm); font-weight: 400;
+  line-height: 1.55; color: var(--ink-2); text-transform: none; letter-spacing: 0;
+  white-space: normal; text-align: left;
+}
+.hint:hover .hint-body, .hint:focus-visible .hint-body { display: block; }
+/* Near the right edge, open leftwards instead of overflowing. */
+.hint.right .hint-body { left: auto; right: 0; }

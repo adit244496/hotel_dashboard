@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
+import { Hint } from './common'
 import { money } from '../lib/format'
 
 const WINDOW_OPTIONS = [6, 12, 18, 24]
@@ -112,8 +113,14 @@ export default function CoverageMatrix({ currency, onUploadFor, refreshKey }) {
         <div>
           <h2>Loaded files by project and month</h2>
           <p className="sub">
-            Each cell is one hotel's workbook for one month. Download, replace or
-            delete what is already loaded, or upload into an empty month.
+            One cell per hotel and month.
+            <Hint>
+              A loaded cell offers <b>download</b>, <b>replace</b> and{' '}
+              <b>delete</b>; hover its badge for the file name, who uploaded it
+              and when. An empty cell offers <b>+ Upload</b>, which points the
+              form below at that hotel and month. Deleting also removes that
+              month&apos;s figures from the dashboard.
+            </Hint>
           </p>
         </div>
         <div className="filter">
@@ -232,8 +239,7 @@ export default function CoverageMatrix({ currency, onUploadFor, refreshKey }) {
             </table>
           </div>
           <div className="coverage-foot">
-            {loadedCount} of {rows.length * columns.length} hotel-months loaded ·
-            scroll sideways for older months · hover “Uploaded” for file details
+            {loadedCount} of {rows.length * columns.length} hotel-months loaded
           </div>
         </>
       )}

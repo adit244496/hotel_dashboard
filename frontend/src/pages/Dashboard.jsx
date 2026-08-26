@@ -28,6 +28,16 @@ export default function Dashboard({ currency }) {
   const [month, setMonth] = useState(12)
   const [period, setPeriod] = useState('YTD')
   const [tab, setTab] = useState('exec')
+  const [filtersOpen, setFiltersOpen] = useState(
+    () => localStorage.getItem('hotel_dashboard_filters_open') !== 'false'
+  )
+
+  const toggleFilters = () => {
+    setFiltersOpen((open) => {
+      localStorage.setItem('hotel_dashboard_filters_open', String(!open))
+      return !open
+    })
+  }
 
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -89,11 +99,39 @@ export default function Dashboard({ currency }) {
   }, [periods, fiscalYear])
 
   const hotelOptions = hotels.map((h) => ({ value: h.code, label: `${h.code} — ${h.name}` }))
+
+  const hotelSummary =
+    selected.length === hotels.length && hotels.length > 0
+      ? `All hotels (${hotels.length})`
+      : selected.length <= 3
+        ? selected.join(', ') || 'None'
+        : `${selected.length} of ${hotels.length} hotels`
+  const filterSummary = [
+    hotelSummary,
+    monthYearLabel(month, fiscalYear),
+    `FY ${fiscalYear}`,
+    period === 'YTD' ? 'Year to date' : 'Monthly',
+  ].join('  ·  ')
   const rows = data?.hotels || []
 
   return (
     <>
-      <div className="filters">
+      <div className={`filters ${filtersOpen ? '' : 'collapsed'}`}>
+        <div className="filters-bar">
+          <button
+            className="filters-toggle"
+            onClick={toggleFilters}
+            aria-expanded={filtersOpen}
+            title={filtersOpen ? 'Hide filters' : 'Show filters'}
+          >
+            <span className="caret" aria-hidden="true">
+              {filtersOpen ? '▾' : '▸'}
+            </span>
+            Filters
+          </button>
+          {!filtersOpen && <span className="filters-summary">{filterSummary}</span>}
+        </div>
+
         <div className="filters-inner">
           <MultiSelect
             label="Hotels"
@@ -152,8 +190,7 @@ export default function Dashboard({ currency }) {
 
         {!loading && periods.length === 0 && (
           <EmptyState title="No data has been uploaded yet">
-            An administrator needs to upload the monthly MIS workbook for each
-            hotel from the Upload page. Once a month is committed it appears here.
+            An administrator can add months from the Upload page.
           </EmptyState>
         )}
 
@@ -165,9 +202,8 @@ export default function Dashboard({ currency }) {
 
         {!loading && periods.length > 0 && selected.length > 0 && rows.length === 0 && (
           <EmptyState title="Nothing recorded for this period">
-            The selected hotels have no committed data for{' '}
-            {monthYearLong(month, fiscalYear)} (FY {fiscalYear}). Pick a different
-            month, or upload that month's workbooks.
+            No data for {monthYearLong(month, fiscalYear)}. Pick another month,
+            or upload it.
           </EmptyState>
         )}
 

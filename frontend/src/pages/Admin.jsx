@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import { Hint } from '../components/common'
 
 const BLANK_HOTEL = { code: '', name: '', entity_code: '', room_inventory: 0, sort_order: 0 }
 
@@ -225,11 +226,16 @@ export default function Admin() {
       <div className="panel-card">
         <h2>Hotels &amp; projects</h2>
         <p className="sub">
-          The entity code is the identifier printed at the top of each workbook
-          (for example E_4013). Setting it lets the app match an upload to the
-          right hotel and warn when a file is uploaded against the wrong one.
-          Deactivating hides a hotel from the dashboard without touching its
-          history; deleting removes it for good.
+          Properties shown on the dashboard.
+          <Hint>
+            The <b>entity code</b> (for example E_4013) is printed at the top of
+            each workbook. Setting it lets an upload be matched to the right
+            hotel, and warns when a file is uploaded against the wrong one.
+            <br />
+            <br />
+            <b>Deactivate</b> hides a hotel but keeps its history.{' '}
+            <b>Delete</b> removes it and its figures for good.
+          </Hint>
         </p>
 
         <div className="tbl-wrap">
@@ -339,8 +345,7 @@ export default function Admin() {
       <div className="panel-card">
         <h2>Users</h2>
         <p className="sub">
-          Admins can upload workbooks and manage hotels and users; standard users
-          have read-only access to the dashboard.
+          Admins upload and manage; users are read-only.
         </p>
 
         <div className="tbl-wrap">
