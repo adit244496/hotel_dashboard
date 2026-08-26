@@ -15,6 +15,12 @@ Description=Hotel Performance Dashboard (FastAPI)
 After=network.target postgresql.service
 Wants=postgresql.service
 
+# PostgreSQL may still be replaying its WAL just after a reboot, so allow a
+# generous number of restarts before systemd gives up. These are [Unit]
+# directives - systemd ignores them if placed under [Service].
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
 [Service]
 Type=simple
 User=srvadmin
@@ -29,11 +35,6 @@ ExecStart=/home/srvadmin/hotel_dashboard/hotel_dashboard/backend/venv/bin/python
     --forwarded-allow-ips='*'
 Restart=on-failure
 RestartSec=5
-
-# PostgreSQL may still be replaying its WAL just after a reboot, so allow a
-# generous number of restarts before systemd gives up.
-StartLimitIntervalSec=300
-StartLimitBurst=10
 
 [Install]
 WantedBy=multi-user.target

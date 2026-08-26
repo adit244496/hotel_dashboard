@@ -122,13 +122,39 @@ The backend serves `frontend/dist` itself, so nginx needs no static root. Re-run
 
 ## 5. systemd
 
+Check first — `preflight.sh` verifies every path the unit references, the
+dependencies, the database connection and the port, and names whichever one is
+wrong:
+
 ```bash
 cd /home/srvadmin/hotel_dashboard/hotel_dashboard/backend
+bash preflight.sh
+```
+
+Then install it:
+
+```bash
 sudo cp hotel_dashboard.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now hotel_dashboard
 sudo systemctl status hotel_dashboard
 ```
+
+### "Job for hotel_dashboard.service failed because of unavailable resources"
+
+`Result: resources` means systemd could not set up the execution environment —
+it never got as far as running the app, so there is no application error to
+find. One of the absolute paths in the unit does not exist. The usual cause is
+the virtualenv being somewhere other than `backend/venv`:
+
+```bash
+journalctl -xeu hotel_dashboard.service -n 40   # the actual reason
+systemd-analyze verify /etc/systemd/system/hotel_dashboard.service
+ls -l /home/srvadmin/hotel_dashboard/hotel_dashboard/backend/venv/bin/python
+```
+
+Fix the path in the unit (or move the venv), then
+`sudo systemctl daemon-reload && sudo systemctl restart hotel_dashboard`.
 
 It runs **uvicorn**, not gunicorn. This is an ASGI app; gunicorn's default
 worker is WSGI and cannot serve it. The other services on this host are Flask,
