@@ -1,10 +1,17 @@
-"""Schema creation and first-run seeding."""
+"""Schema creation and first-run seeding.
+
+Every step here runs in *each* uvicorn worker at startup, simultaneously. Two
+workers will both find an empty table and both try to seed it, so each step has
+to tolerate another process having just done the same thing — otherwise the
+loser dies on a unique constraint and the service comes up short of workers.
+"""
 
 from __future__ import annotations
 
 import logging
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError, OperationalError, ProgrammingError
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -28,7 +35,12 @@ DEFAULT_HOTELS = [
 
 
 def init_db() -> None:
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except (IntegrityError, ProgrammingError, OperationalError) as exc:
+        # Another worker created the tables between our check and our CREATE.
+        log.info("Schema already present (%s)", type(exc).__name__)
+
     with SessionLocal() as db:
         _seed_admin(db)
         _seed_hotels(db)
@@ -46,7 +58,12 @@ def _seed_admin(db: Session) -> None:
             hashed_password=hash_password(settings.first_admin_password),
         )
     )
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        log.info("Administrator account already created by another worker")
+        return
     log.info("Created the initial administrator account: %s", email)
 
 
@@ -63,5 +80,10 @@ def _seed_hotels(db: Session) -> None:
                 sort_order=order,
             )
         )
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        log.info("Hotels already seeded by another worker")
+        return
     log.info("Seeded %d hotels", len(DEFAULT_HOTELS))

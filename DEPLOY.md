@@ -177,6 +177,17 @@ sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d hospkpi.ambujaneotia.com
 ```
 
+The shipped config is **HTTP-only on purpose**. certbot reads `server_name`
+from it, obtains the certificate, then rewrites the file to add the TLS server
+and the http-to-https redirect. A TLS block shipped here would point at
+certificate files that do not exist yet — and `nginx -t` fails on a missing
+certificate, so certbot could never run to create it.
+
+Do not add `http2 on;` by hand. That form needs nginx 1.25.1 or newer; the
+1.24 that Ubuntu 24.04 ships rejects it with
+`unknown directive "http2"` and the whole config fails to load. On 1.24 the
+equivalent is the `http2` parameter on the `listen` directive.
+
 The DNS A record for `hospkpi.ambujaneotia.com` must already point at this host,
 or certbot cannot validate.
 

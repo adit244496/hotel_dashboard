@@ -533,6 +533,49 @@ def run(client: TestClient) -> int:
     check(bad.status_code == 422, f"unknown metric -> {bad.status_code}")
 
 
+    print("\n12. Startup is safe with multiple workers")
+    # Each uvicorn worker runs init_db() at startup, at the same moment. Two
+    # workers both finding an empty table and both seeding it must not kill
+    # the loser on a unique constraint.
+    from concurrent.futures import ThreadPoolExecutor
+
+    from sqlalchemy import func as _func
+    from sqlalchemy import select as _sel
+
+    from app.db.init_db import init_db as _init_db
+    from app.db.session import SessionLocal as _Session
+    from app.models import Hotel as _H
+    from app.models import User as _U
+
+    race_errors: list[str] = []
+
+    def _boot(_):
+        try:
+            _init_db()
+        except Exception as exc:  # noqa: BLE001
+            race_errors.append(f"{type(exc).__name__}: {str(exc).splitlines()[0][:90]}")
+
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        list(pool.map(_boot, range(6)))
+
+    check(not race_errors, f"6 concurrent startups, {len(race_errors)} failure(s)")
+    for err in race_errors[:2]:
+        print(f"         {err}")
+
+    with _Session() as rdb:
+        admins = rdb.scalar(
+            _sel(_func.count()).select_from(_U).where(_U.role == "admin")
+        )
+        codes = [h.code for h in rdb.scalars(_sel(_H)).all()]
+    check(admins == 1, f"exactly one administrator after the race (got {admins})")
+    # An earlier section cascade-deletes a hotel, so the count is not 7 here.
+    # What matters is that six concurrent seeders created no duplicates.
+    check(
+        len(codes) == len(set(codes)),
+        f"no duplicate hotel codes after the race ({len(codes)} rows, "
+        f"{len(set(codes))} distinct)",
+    )
+
     print("\n" + "=" * 62)
     if failures:
         print(f"{len(failures)} CHECK(S) FAILED:")
