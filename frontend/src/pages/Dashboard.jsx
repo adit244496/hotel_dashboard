@@ -117,22 +117,32 @@ export default function Dashboard({ currency }) {
   return (
     <>
       <div className={`filters ${filtersOpen ? '' : 'collapsed'}`}>
-        <div className="filters-bar">
-          <button
-            className="filters-toggle"
-            onClick={toggleFilters}
-            aria-expanded={filtersOpen}
-            title={filtersOpen ? 'Hide filters' : 'Show filters'}
-          >
-            <span className="caret" aria-hidden="true">
-              {filtersOpen ? '▾' : '▸'}
-            </span>
-            Filters
-          </button>
+        {/* The whole bar toggles, not just the caret — a wider target, and the
+            summary text is the obvious thing to click. The controls live in a
+            separate row below, so using them never collapses the pane. */}
+        <div
+          className="filters-bar"
+          role="button"
+          tabIndex={0}
+          aria-expanded={filtersOpen}
+          aria-controls="filter-controls"
+          title={filtersOpen ? 'Hide filters' : 'Show filters'}
+          onClick={toggleFilters}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              toggleFilters()
+            }
+          }}
+        >
+          <span className="caret" aria-hidden="true">
+            {filtersOpen ? '▾' : '▸'}
+          </span>
+          <span className="filters-label">Filters</span>
           {!filtersOpen && <span className="filters-summary">{filterSummary}</span>}
         </div>
 
-        <div className="filters-inner">
+        <div className="filters-inner" id="filter-controls">
           <MultiSelect
             label="Hotels"
             options={hotelOptions}
