@@ -1,0 +1,36 @@
+# systemd unit for the Hotel Performance Dashboard.
+#
+#   sudo cp hotel_dashboard.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now hotel_dashboard
+#
+# Adjust User and the paths below to match the deployment.
+
+[Unit]
+Description=Hotel Performance Dashboard (FastAPI)
+After=network.target
+# The app needs PostgreSQL; if it runs in Docker on the same host, use:
+# After=network.target docker.service
+# Requires=docker.service
+
+[Service]
+Type=simple
+User=srvadmin
+Group=srvadmin
+WorkingDirectory=/opt/hotel_dashboard/backend
+EnvironmentFile=/opt/hotel_dashboard/backend/.env
+ExecStart=/opt/hotel_dashboard/backend/venv/bin/python -m uvicorn app.main:app \
+    --host 0.0.0.0 \
+    --port 8016 \
+    --workers 2 \
+    --proxy-headers \
+    --forwarded-allow-ips='*'
+Restart=on-failure
+RestartSec=5
+
+# The database may still be starting up after a reboot; keep retrying.
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target

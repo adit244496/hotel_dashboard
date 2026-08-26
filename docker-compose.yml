@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hotel_dashboard_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hotel
+      POSTGRES_PASSWORD: hotel
+      POSTGRES_DB: hotel_dashboard
+    # Port 5434 on the host: 5432 and 5433 are usually taken by a locally
+    # installed PostgreSQL. Change the left-hand side if 5434 is busy too.
+    ports:
+      - "5434:5432"
+    volumes:
+      - hotel_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotel -d hotel_dashboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  hotel_pgdata:

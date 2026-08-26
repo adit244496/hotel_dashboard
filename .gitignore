@@ -1,0 +1,79 @@
+# ---------------------------------------------------------------------------
+# Confidential data — NEVER commit
+#
+# The MIS workbooks are the group's actual monthly financials (revenue, EBITDA,
+# payroll, segment and outlet detail). They stay out of source control; the app
+# reads them at upload time instead.
+# ---------------------------------------------------------------------------
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+
+# Uploaded workbooks kept by the app
+backend/storage/
+storage/
+
+# Secrets and local configuration (.env.example is committed as the template)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.sqlite3
+*.db
+
+# ---------------------------------------------------------------------------
+# Node / frontend
+# ---------------------------------------------------------------------------
+node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+
+# ---------------------------------------------------------------------------
+# Editors and OS
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------------
+# Local scratch
+# ---------------------------------------------------------------------------
+*.log
+tmp/
+temp/
+
+# ---------------------------------------------------------------------------
+# Reference artefact from the original SharePoint page. Its embedded DATA block
+# holds the group's real monthly revenue/EBITDA figures, so it is treated the
+# same as the workbooks and kept out of source control.
+# ---------------------------------------------------------------------------
+Hotel_Dashboard_SharePoint*.html
