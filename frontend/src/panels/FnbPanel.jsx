@@ -115,7 +115,13 @@ export default function FnbPanel({ hotels, currency }) {
         </ChartCard>
       </div>
 
-      <TableCard title="F&B performance">
+      <TableCard title="F&B performance" hint={<>
+            <b>Act</b> — actual, as reported in the workbook.
+            <br />
+            <b>Bud</b> — the budget for the same period.
+            <br />
+            <b>LY</b> — last year: the same period one year earlier.
+          </>}>
         <table>
           <thead>
             <tr>

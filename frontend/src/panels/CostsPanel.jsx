@@ -85,7 +85,17 @@ export default function CostsPanel({ hotels }) {
         </ChartCard>
       </div>
 
-      <TableCard title="Cost analysis" note="Actual / Budget / Last year, as a % of the relevant revenue base">
+      <TableCard
+        title="Cost analysis"
+        note="% of the relevant revenue base"
+        hint={<>
+            <b>Act</b> — actual, as reported in the workbook.
+            <br />
+            <b>Bud</b> — the budget for the same period.
+            <br />
+            <b>LY</b> — last year: the same period one year earlier.
+          </>}
+      >
         <table>
           <thead>
             <tr>
@@ -98,8 +108,8 @@ export default function CostsPanel({ hotels }) {
             </tr>
             <tr>
               {HEADS.flatMap((head) => [
-                <th key={`${head.key}-a`} className="num">A</th>,
-                <th key={`${head.key}-b`} className="num">B</th>,
+                <th key={`${head.key}-a`} className="num">Act</th>,
+                <th key={`${head.key}-b`} className="num">Bud</th>,
                 <th key={`${head.key}-l`} className="num">LY</th>,
               ])}
             </tr>

@@ -54,11 +54,14 @@ export function ChartCard({ title, subtitle, children, tall = false }) {
   )
 }
 
-export function TableCard({ title, note, children }) {
+export function TableCard({ title, note, hint, children }) {
   return (
     <div className="tbl-card">
       <div className="tbl-hdr">
-        <h3>{title}</h3>
+        <h3>
+          {title}
+          {hint && <Hint>{hint}</Hint>}
+        </h3>
         {note && <span className="note">{note}</span>}
       </div>
       <div className="tbl-wrap">{children}</div>

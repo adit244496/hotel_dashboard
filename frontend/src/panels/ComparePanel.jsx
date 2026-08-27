@@ -57,7 +57,16 @@ export default function ComparePanel({ hotels, currency }) {
       </div>
 
       <div style={{ marginTop: 'var(--sp-4)' }}>
-        <TableCard title="Comparison: actual vs budget vs last year">
+        <TableCard
+          title="Comparison: actual vs budget vs last year"
+          hint={<>
+            <b>Act</b> — actual, as reported in the workbook.
+            <br />
+            <b>Bud</b> — the budget for the same period.
+            <br />
+            <b>LY</b> — last year: the same period one year earlier.
+          </>}
+        >
           <table>
             <thead>
               <tr>
@@ -70,8 +79,8 @@ export default function ComparePanel({ hotels, currency }) {
               </tr>
               <tr>
                 {[...ROWS, { key: 'ebitdaPct' }].flatMap((row) => [
-                  <th key={`${row.key}-a`} className="num">A</th>,
-                  <th key={`${row.key}-b`} className="num">B</th>,
+                  <th key={`${row.key}-a`} className="num">Act</th>,
+                  <th key={`${row.key}-b`} className="num">Bud</th>,
                   <th key={`${row.key}-l`} className="num">LY</th>,
                 ])}
               </tr>
